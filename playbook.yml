@@ -61,3 +61,17 @@
         bind_dn: cn=admin,dc=edincubator,dc=eu
         bind_pw: "{{ ldap_bind_password }}"
         server_uri: ldap://localhost
+
+- hosts: kerberos
+  remote_user: centos
+  tasks:
+    - name: create Kerberos principal
+      command: kadmin -p admin/admin@EDINCUBATOR.EU -w "{{ kerberos_admin_password }}" addprinc -randkey "{{ username }}"@EDINCUBATOR.EU
+      become: yes
+      become_method: sudo
+      ignore_errors: True
+    - name: create Kerberos principals for each host
+      shell: kadmin -p admin/admin@EDINCUBATOR.EU -w "{{ kerberos_admin_password }}" addprinc -randkey "{{ username }}"/"{{ item }}"@EDINCUBATOR.EU
+      loop: "{{ query('inventory_hostnames', 'cluster') }}"
+      become: yes
+      become_method: sudo
