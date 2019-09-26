@@ -1,0 +1,63 @@
+- hosts: cluster
+  remote_user: centos
+  tasks:
+    - set_fact:
+        user_password: "{{ lookup('password', '/dev/null length=12 chars=ascii_letters') }}" 
+    - name: create unix group at the cluster
+      group:
+        name: "{{ username }}"
+      become: yes
+      become_method: sudo
+    - name: create unix user at the cluster
+      user:
+        name: "{{ username }}"
+        group: "{{ username }}"
+      become: yes
+      become_method: sudo
+
+- hosts: ldap
+  remote_user: centos
+  tasks:
+    - getent:
+        database: passwd
+        key: "{{ username }}"
+    - getent:
+        database: group
+        key: "{{ username }}"
+    - set_fact:
+        gid: "{{ getent_group[username][1] }}"
+        uid: "{{ getent_passwd[username][1] }}"
+    - name: create LDAP group
+      ldap_entry:
+        dn: cn={{ username }},ou=groups,dc=edincubator,dc=eu
+        objectClass: posixGroup
+        attributes:
+          gidnumber: "{{ gid }}"
+        bind_dn: cn=admin,dc=edincubator,dc=eu
+        bind_pw: "{{ ldap_bind_password }}"
+        server_uri: ldap://localhost
+    - name: create LDAP user
+      ldap_entry:
+        dn: cn={{ username }},ou=user,dc=edincubator,dc=eu
+        objectClass: 
+          - posixAccount
+          - inetOrgPerson
+        attributes:
+          givenname: "{{ username }}"
+          userpassword: \{MD5\}"{{ user_password | hash('md5') }}"
+          gidnumber: "{{ gid }}"
+          uidnumber: "{{ uid }}"
+          uid: "{{ username }}"
+          homeDirectory: /user/"{{ username }}"
+          sn: "{{ username }}"
+        bind_dn: cn=admin,dc=edincubator,dc=eu
+        bind_pw: "{{ ldap_bind_password }}"
+        server_uri: ldap://localhost
+    - name: add user to subgrantees group
+      ldap_attr:
+        dn: cn=subgrantees,ou=groups,dc=edincubator,dc=eu
+        name: member
+        values: cn={{ username }},ou=user,dc=edincubator,dc=eu
+        bind_dn: cn=admin,dc=edincubator,dc=eu
+        bind_pw: "{{ ldap_bind_password }}"
+        server_uri: ldap://localhost

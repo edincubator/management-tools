@@ -1,0 +1,16 @@
+[kerberos]
+edi-master.novalocal
+
+[ldap]
+edi-master.novalocal
+
+[masters]
+edi-master.novalocal
+
+[workers]
+edi-worker-[1:3].novalocal
+bifrost2.deusto.es
+
+[cluster:children]
+masters
+workers
