@@ -102,3 +102,14 @@
       become_method: sudo
       become_user: hdfs
       ignore_errors: True
+    - name: kinit HBase
+      command: kinit -kt /etc/security/keytabs/hbase.headless.keytab hbase-edi_test@EDINCUBATOR.EU
+      become: yes
+      become_method: sudo
+      become_user: hbase
+    - name: create HBase namespace
+      shell: echo "create_namespace '"{{ username }}"'" | hbase shell
+      become: yes
+      become_method: sudo
+      become_user: hbase
+      ignore_errors: True
