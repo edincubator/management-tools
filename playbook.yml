@@ -113,3 +113,13 @@
       become_method: sudo
       become_user: hbase
       ignore_errors: True
+    - name: kinit Hive
+      command: kinit -kt /etc/security/keytabs/hive.service.keytab hive/edi-master.novalocal@EDINCUBATOR.EU
+      become: yes
+      become_method: sudo
+      become_user: hive
+    - name: create Hive namespace
+      shell: beeline -u "jdbc:hive2://edi-master.novalocal:10000/default;principal=hive/edi-master.novalocal@EDINCUBATOR.EU;" -e "CREATE DATABASE "{{ username }}""
+      become: yes
+      become_method: sudo
+      become_user: hive
