@@ -14,3 +14,6 @@ bifrost2.deusto.es
 [cluster:children]
 masters
 workers
+
+[kafka-client]
+edi-worker-1.novalocal
