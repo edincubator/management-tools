@@ -123,33 +123,41 @@
       become: yes
       become_method: sudo
       become_user: hive
+      ignore_errors: True
     
 - hosts: kafka-client
   remote_user: centos
-  tasks:  
+  tasks:
     - name: create Kafka topic
-      shell: /usr/hdp/current/kafka-client/bin/kafka-topics.sh --create --zookeeper "{{ zookeeper_servers }}" --topic "{{ username }} --partitions 3 --replication-factor 3"
+      shell: /usr/hdp/current/kafka-broker/bin/kafka-topics.sh --create --zookeeper "{{ zookeeper_servers }}" --topic "{{ username }}" --partitions 3 --replication-factor 3
       become: yes
       become_method: sudo
+      ignore_errors: True
+
+- hosts: 127.0.0.1
+  connection: local
+  tasks:
+    - name: make a copy of HDFS Ranger permission template
+      copy:
+        src: ranger/hdfs.json
+        dest: build/hdfs.json
+        follow: yes
+    - name: replace variables at HDFS Ranger permissions config
+      replace:
+        path: build/hdfs.json
+        regexp: \{\{USERNAME\}\}
+        replace: "{{ username }}"
 
 - hosts: masters
   remote_user: centos
   tasks:
-    - name: copy Ranger permissions config
-      copy:
-        src: ranger-config.json
-        dest: /tmp/ranger-config.json
-        follow: yes
-    - name: replace variables at Ranger permissions config
-      replace:
-        path: /tmp/ranger-config.json
-        regex: 
     - name: Set Ranger permissions
       uri:
-        url: "{{ ranger_url }}"/service/public/v2/api/policy
+        url: "{{ ranger_url }}/service/public/v2/api/policy"
         user: "{{ ranger_username }}"
         password: "{{ ranger_password }}"
         force_basic_auth: yes
         method: POST
-        body: "{{ lookup('file', '/tmp/ranger-config.json') }}"
+        body: "{{ lookup('file', 'build/hdfs.json') }}"
+        body_format: "json"
 

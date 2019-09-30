@@ -1,0 +1,45 @@
+{
+    "isEnabled": true,
+    "service": "EDI_TEST_hadoop",
+    "name": "/user/{{USERNAME}}",
+    "description": "R/W permissions for /user/{{USERNAME}}",
+    "isAuditEnabled": true,
+    "resources": {
+    "path": {
+        "values": [
+            "/user/{{USERNAME}}"
+        ],
+        "isExcludes": false,
+        "isRecursive": true
+    }
+    },
+    "policyItems": [
+    {
+        "accesses": [
+        {
+            "type": "read",
+            "isAllowed": true
+        },
+        {
+            "type": "write",
+            "isAllowed": true
+        },
+        {
+            "type": "execute",
+            "isAllowed": true
+        }
+        ],
+        "users": [
+            "{{USERNAME}}"
+        ],
+        "groups": [],
+        "conditions": [],
+        "delegateAdmin": false
+    }
+    ],
+    "denyPolicyItems": [],
+    "allowExceptions": [],
+    "denyExceptions": [],
+    "dataMaskPolicyItems": [],
+    "rowFilterPolicyItems": []
+}
