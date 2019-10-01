@@ -147,11 +147,41 @@
         path: build/hdfs.json
         regexp: \{\{USERNAME\}\}
         replace: "{{ username }}"
+    - name: make a copy of HBase Ranger permission template
+      copy:
+        src: ranger/hbase.json
+        dest: build/hbase.json
+        follow: yes
+    - name: replace variables at Hbase Ranger permissions config
+      replace:
+        path: build/hbase.json
+        regexp: \{\{USERNAME\}\}
+        replace: "{{ username }}"
+    - name: make a copy of Hive Ranger permission template
+      copy:
+        src: ranger/hive.json
+        dest: build/hive.json
+        follow: yes
+    - name: replace variables at Hive Ranger permissions config
+      replace:
+        path: build/hive.json
+        regexp: \{\{USERNAME\}\}
+        replace: "{{ username }}"
+    - name: make a copy of Kafka Ranger permission template
+      copy:
+        src: ranger/kafka.json
+        dest: build/kafka.json
+        follow: yes
+    - name: replace variables at Kafka Ranger permissions config
+      replace:
+        path: build/kafka.json
+        regexp: \{\{USERNAME\}\}
+        replace: "{{ username }}"
 
 - hosts: masters
   remote_user: centos
   tasks:
-    - name: Set Ranger permissions
+    - name: Set HDFS Ranger permissions
       uri:
         url: "{{ ranger_url }}/service/public/v2/api/policy"
         user: "{{ ranger_username }}"
@@ -159,5 +189,32 @@
         force_basic_auth: yes
         method: POST
         body: "{{ lookup('file', 'build/hdfs.json') }}"
+        body_format: "json"
+    - name: Set HBase Ranger permissions
+      uri:
+        url: "{{ ranger_url }}/service/public/v2/api/policy"
+        user: "{{ ranger_username }}"
+        password: "{{ ranger_password }}"
+        force_basic_auth: yes
+        method: POST
+        body: "{{ lookup('file', 'build/hbase.json') }}"
+        body_format: "json"
+    - name: Set Hive Ranger permissions
+      uri:
+        url: "{{ ranger_url }}/service/public/v2/api/policy"
+        user: "{{ ranger_username }}"
+        password: "{{ ranger_password }}"
+        force_basic_auth: yes
+        method: POST
+        body: "{{ lookup('file', 'build/hive.json') }}"
+        body_format: "json"
+    - name: Set Kafka Ranger permissions
+      uri:
+        url: "{{ ranger_url }}/service/public/v2/api/policy"
+        user: "{{ ranger_username }}"
+        password: "{{ ranger_password }}"
+        force_basic_auth: yes
+        method: POST
+        body: "{{ lookup('file', 'build/kafka.json') }}"
         body_format: "json"
 

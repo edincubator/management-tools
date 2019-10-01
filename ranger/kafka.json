@@ -1,0 +1,78 @@
+{
+    "isEnabled": true,
+    "service": "EDI_TEST_kafka",
+    "name": "{{USERNAME}} topic",
+    "policyType": 0,
+    "policyPriority": 0,
+    "description": "Kafka topic for {{USERNAME}}",
+    "isAuditEnabled": true,
+    "resources": {
+        "topic": {
+            "values": [
+                "{{USERNAME}}"
+            ],
+            "isExcludes": false,
+            "isRecursive": false
+        }
+    },
+    "policyItems": [
+        {
+            "accesses": [
+                {
+                    "type": "publish",
+                    "isAllowed": true
+                },
+                {
+                    "type": "consume",
+                    "isAllowed": true
+                },
+                {
+                    "type": "configure",
+                    "isAllowed": true
+                },
+                {
+                    "type": "describe",
+                    "isAllowed": true
+                },
+                {
+                    "type": "create",
+                    "isAllowed": true
+                },
+                {
+                    "type": "delete",
+                    "isAllowed": true
+                },
+                {
+                    "type": "kafka_admin",
+                    "isAllowed": true
+                },
+                {
+                    "type": "idempotent_write",
+                    "isAllowed": true
+                },
+                {
+                    "type": "describe_configs",
+                    "isAllowed": true
+                },
+                {
+                    "type": "alter_configs",
+                    "isAllowed": true
+                }
+            ],
+            "users": [
+                "{{USERNAME}}"
+            ],
+            "groups": [],
+            "conditions": [],
+            "delegateAdmin": false
+        }
+    ],
+    "denyPolicyItems": [],
+    "allowExceptions": [],
+    "denyExceptions": [],
+    "dataMaskPolicyItems": [],
+    "rowFilterPolicyItems": [],
+    "options": {},
+    "validitySchedules": [],
+    "policyLabels": []
+}

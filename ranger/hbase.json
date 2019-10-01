@@ -1,0 +1,63 @@
+{
+        "service": "EDI_TEST_hbase",
+        "name": "{{USERNAME}} namespace",
+        "policyType": 0,
+        "description": "HBase namespace for {{USERNAME}}",
+        "isAuditEnabled": true,
+        "resources": {
+            "column-family": {
+                "values": [
+                    "*"
+                ],
+                "isExcludes": false,
+                "isRecursive": false
+            },
+            "column": {
+                "values": [
+                    "*"
+                ],
+                "isExcludes": false,
+                "isRecursive": false
+            },
+            "table": {
+                "values": [
+                    "{{USERNAME}}"
+                ],
+                "isExcludes": false,
+                "isRecursive": false
+            }
+        },
+        "policyItems": [
+            {
+                "accesses": [
+                    {
+                        "type": "read",
+                        "isAllowed": true
+                    },
+                    {
+                        "type": "write",
+                        "isAllowed": true
+                    },
+                    {
+                        "type": "create",
+                        "isAllowed": true
+                    },
+                    {
+                        "type": "admin",
+                        "isAllowed": true
+                    }
+                ],
+                "users": [
+                    "{{USERNAME}}"
+                ],
+                "groups": [],
+                "conditions": [],
+                "delegateAdmin": false
+            }
+        ],
+        "denyPolicyItems": [],
+        "allowExceptions": [],
+        "denyExceptions": [],
+        "dataMaskPolicyItems": [],
+        "rowFilterPolicyItems": []
+    }
