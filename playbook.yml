@@ -170,7 +170,7 @@
                   'version': 0
                 },
                 'component': {
-                  'name': 'user4KeytabCredentialsService',
+                  'name': '{{ username }}KeytabCredentialsService',
                   'type': 'org.apache.nifi.kerberos.KeytabCredentialsService',
                   'bundle': {
                           'group': 'org.apache.nifi',
@@ -190,8 +190,8 @@
                       'state': 'ENABLED',
                       'restricted': true,
                       'properties': {
-                          'Kerberos Keytab': '/etc/security/keytabs/"{{ username }}".service.keytab',
-                          'Kerberos Principal': '"{{ username }}"@EDINCUBATOR.EU'
+                          'Kerberos Keytab': '/etc/security/keytabs/{{ username }}.service.keytab',
+                          'Kerberos Principal': '{{ username }}@EDINCUBATOR.EU'
                       }
                 }
               }
