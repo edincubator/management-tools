@@ -157,6 +157,46 @@
         body: {'revision': {'version': 0}, 'component': {'name': '{{ username }} Process Group', "position": { 'x': "{{ process_group_count|int * 450 }}", 'y': 0 }}}
         validate_certs: no
         status_code: 201
+      register: nifi_process_group
+    - name: create KeytabCredentialService
+      uri:  
+        url: "{{ nifi_url }}/nifi-api/process-groups/{{ nifi_process_group.json.id }}/controller-services"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ nifi_token['content'] }}"
+        body_format: json
+        body: {
+                'revision': {
+                  'version': 0
+                },
+                'component': {
+                  'name': 'user4KeytabCredentialsService',
+                  'type': 'org.apache.nifi.kerberos.KeytabCredentialsService',
+                  'bundle': {
+                          'group': 'org.apache.nifi',
+                          'artifact': 'nifi-kerberos-credentials-service-nar',
+                          'version': '1.9.0.3.4.0.0-155'
+                      },
+                      'controllerServiceApis': [
+                          {
+                              'type': 'org.apache.nifi.kerberos.KerberosCredentialsService',
+                              'bundle': {
+                                  'group': 'org.apache.nifi',
+                                  'artifact': 'nifi-standard-services-api-nar',
+                                  'version': '1.9.0.3.4.0.0-155'
+                              }
+                          }
+                      ],
+                      'state': 'ENABLED',
+                      'restricted': true,
+                      'properties': {
+                          'Kerberos Keytab': '/etc/security/keytabs/"{{ username }}".service.keytab',
+                          'Kerberos Principal': '"{{ username }}"@EDINCUBATOR.EU'
+                      }
+                }
+              }
+        validate_certs: no
+        status_code: 201
     
 - hosts: kafka-client
   remote_user: centos
