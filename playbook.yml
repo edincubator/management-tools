@@ -77,12 +77,12 @@
       become_method: sudo
       ignore_errors: True
     - name: create Kerberos Keytab
-      shell: kadmin -p admin/admin@EDINCUBATOR.EU -w "{{ kerberos_admin_password }}" ktadd -k /tmp/"{{ username }}".service.keytab "{{ username }}"@EDINCUBATOR.EU
+      shell: kadmin -p admin/admin@EDINCUBATOR.EU -w "{{ kerberos_admin_password }}" ktadd -k /etc/security/keytabs/"{{ username }}".service.keytab "{{ username }}"@EDINCUBATOR.EU
       become: yes
       become_method: sudo
       ignore_errors: True
     - name: create Kerberos Keytab for each host
-      shell: kadmin -p admin/admin@EDINCUBATOR.EU -w "{{ kerberos_admin_password }}" ktadd -k /tmp/"{{ username }}".service.keytab "{{ username }}"/"{{ item }}"@EDINCUBATOR.EU
+      shell: kadmin -p admin/admin@EDINCUBATOR.EU -w "{{ kerberos_admin_password }}" ktadd -k /etc/security/keytabs/"{{ username }}".service.keytab "{{ username }}"/"{{ item }}"@EDINCUBATOR.EU
       loop: "{{ query('inventory_hostnames', 'cluster') }}"
       become: yes
       become_method: sudo
