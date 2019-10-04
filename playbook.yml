@@ -124,6 +124,39 @@
       become_method: sudo
       become_user: hive
       ignore_errors: True
+    - name: get NiFi token
+      uri:
+        url: "{{ nifi_url }}/nifi-api/access/token"
+        method: POST
+        body_format: form-urlencoded
+        body:
+          username: "{{ nifi_username }}"
+          password: "{{ nifi_password }}"
+        validate_certs: no
+        status_code: 201
+        return_content: yes
+      register: nifi_token
+    - name: get NiFi process groups
+      uri:
+        url: "{{ nifi_url }}/nifi-api/flow/process-groups/root"
+        method: GET
+        headers:
+          Authorization: "Bearer {{ nifi_token['content'] }}"
+        validate_certs: no
+        return_content: yes
+      register: nifi_process_groups
+    - set_fact:
+        process_group_count: "{{ nifi_process_groups.json.processGroupFlow.flow.processGroups|count}}"
+    - name: NiFi create process group
+      uri:
+        url: "{{ nifi_url }}/nifi-api/process-groups/root/process-groups"
+        method: POST
+        headers:
+          Authorization: "Bearer {{ nifi_token['content'] }}"
+        body_format: json
+        body: {'revision': {'version': 0}, 'component': {'name': '{{ username }} Process Group', "position": { 'x': "{{ process_group_count|int * 450 }}", 'y': 0 }}}
+        validate_certs: no
+        status_code: 201
     
 - hosts: kafka-client
   remote_user: centos
