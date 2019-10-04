@@ -157,6 +157,7 @@
         body: {'revision': {'version': 0}, 'component': {'name': '{{ username }} Process Group', "position": { 'x': "{{ process_group_count|int * 450 }}", 'y': 0 }}}
         validate_certs: no
         status_code: 201
+        return_content: yes
       register: nifi_process_group
     - name: create KeytabCredentialService
       uri:  
@@ -197,6 +198,23 @@
               }
         validate_certs: no
         status_code: 201
+        return_content: yes
+      register: nifi_controller_service
+
+    - name: enable KeytabCredentialService
+      uri:
+        url: "{{ nifi_url }}/nifi-api/controller-services/{{ nifi_controller_service.json.id }}/run-status"
+        method: PUT
+        headers:
+          Authorization: "Bearer {{ nifi_token['content'] }}"
+        body_format: json
+        body: {
+                "revision": {
+                  "version": 1
+                },
+                "state": "ENABLED" 
+              }
+        validate_certs: no
     
 - hosts: kafka-client
   remote_user: centos
